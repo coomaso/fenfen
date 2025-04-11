@@ -17,7 +17,7 @@ def decrypt_data(encrypted_base64):
     decrypted_bytes = cipher.decrypt(ciphertext)
 
     try:
-        # 移除填充并将解密结果解码为字符串
+        # Attempt to remove padding
         decrypted_text = unpad(decrypted_bytes, AES.block_size).decode('utf-8')
     except ValueError as e:
         print("Padding error or incorrect encoding:", e)
