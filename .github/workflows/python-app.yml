@@ -28,9 +28,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install pycryptodome
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Lint with flake8
-      run: |
-
     - name: Test with pytest
       run: |
         python3 main.py
