@@ -77,22 +77,6 @@ def save_data_locally(data: dict, filepath: str = Config.LOCAL_DATA_PATH):
     with open(filepath, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
-# ========== 深度排序 ==========
-def deep_sort(data):
-    if isinstance(data, list):
-        # Sort the list of dictionaries based on the first key, or any key of your choice
-        return sorted((deep_sort(item) for item in data), key=lambda x: str(x))
-    elif isinstance(data, dict):
-        # Sort dictionaries by key to ensure consistent order
-        return {key: deep_sort(value) for key, value in sorted(data.items())}
-    else:
-        return data
-
-# ========== 哈希生成 ==========
-def hash_data(data):
-    sorted_data = deep_sort(data)
-    return hash(str(sorted_data))  # You can adjust this to generate a hash using any method you prefer
-
 # ========== 报告生成 ==========
 class CreditReportGenerator:
     @staticmethod
@@ -133,6 +117,8 @@ class CreditReportGenerator:
                     content.append("\n")
         return "\n".join(content)
 
+
+
     @staticmethod
     def format_bad_behaviors(data: Dict) -> str:
         bad_behaviors = data.get("blxwArray", [])
@@ -157,6 +143,7 @@ class CreditReportGenerator:
                 if i < len(bad_behaviors) - 1:
                     content.append("\n")
         return "\n".join(content)
+
 
     @classmethod
     def generate_full_report(cls, data: Dict) -> str:
@@ -212,11 +199,11 @@ class AlertManager:
 # ========== 数据对比 ==========
 def get_diff_data(local_data: dict, new_data: dict) -> dict:
     diff_data = {}
-    if hash_data(local_data.get("cxdamxArray", [])) != hash_data(new_data.get("cxdamxArray", [])):
+    if local_data.get("cxdamxArray") != new_data.get("cxdamxArray"):
         diff_data["cxdamxArray"] = new_data.get("cxdamxArray", [])
-    if hash_data(local_data.get("lhxwArray", [])) != hash_data(new_data.get("lhxwArray", [])):
+    if local_data.get("lhxwArray") != new_data.get("lhxwArray"):
         diff_data["lhxwArray"] = new_data.get("lhxwArray", [])
-    if hash_data(local_data.get("blxwArray", [])) != hash_data(new_data.get("blxwArray", [])):
+    if local_data.get("blxwArray") != new_data.get("blxwArray"):
         diff_data["blxwArray"] = new_data.get("blxwArray", [])
     diff_data["cioName"] = new_data.get("cioName", "未知企业")
     return diff_data
@@ -265,9 +252,14 @@ def main():
                 CreditReportGenerator.format_bad_behaviors,
             ]:
                 report = report_func(new_data)
-                parts = split_markdown_content(report)
-                for part in parts:
+                for part in split_markdown_content(report):
                     send_wechat_markdown(part)
 
+            logging.info("✅ 新数据报告发送完成")
+        else:
+            logging.info("📡 数据未变化，无需推送")
     except Exception as e:
-        logging.error(f"程序异常: {str(e)}")
+        logging.exception(f"程序异常: {str(e)}")
+
+if __name__ == "__main__":
+    main()
