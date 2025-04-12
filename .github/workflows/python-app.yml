@@ -29,24 +29,24 @@ jobs:
         python -m pip install --upgrade pip
         pip install requests pycryptodome loguru
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        
+    - name: Run the credit monitor script
+      run: |
+        python3 main.py
 
-      - name: Run the credit monitor script
-        run: |
-          python3 main.py
+    - name: Commit and push company_data.json to the repository
+      run: |
+        # 配置 Git 用户信息
+        git config user.name "coomaso"
+        git config user.email "coomaso@gmail.com"
+        
+        # 检查company_data.json是否有更改
+        git add company_data.json
 
-      - name: Commit and push company_data.json to the repository
-        run: |
-          # 配置 Git 用户信息
-          git config user.name "coomaso"
-          git config user.email "coomaso@gmail.com"
-          
-          # 检查company_data.json是否有更改
-          git add company_data.json
+        # 提交更改，如果没有更改则跳过
+        git commit -m "Update company_data.json" || echo "No changes to commit" 
 
-          # 提交更改，如果没有更改则跳过
-          git commit -m "Update company_data.json" || echo "No changes to commit" 
-
-          # 推送到远程仓库
+        # 推送到远程仓库
           git push origin main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用 GitHub 默认的 GITHUB_TOKEN 来执行推送
