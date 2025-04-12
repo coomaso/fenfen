@@ -76,7 +76,7 @@ class CreditReportGenerator:
         
         for item in score_items:
             content.extend([
-                f"- 资质：{item.get('zzmx', '未知资质')}",
+                f"  - 资质：{item.get('zzmx', '未知资质')}",
                 f"  - 等级：{item.get('cxdj', '未知等级')}",
                 f"  - 得分：{item.get('score', '无')}（基础分: {item.get('csf', '无')}，扣分: {item.get('kf', '无')}，加分: {item.get('zxjf', '无')}）"
             ])
@@ -148,7 +148,7 @@ class AlertManager:
         now = datetime.now()
         
         # 检查良好行为
-        alerts.extend(cls._check_awards(data.get("lhxwArray", []), now)
+        alerts.extend(cls._check_awards(data.get("lhxwArray", []), now))
         
         # 检查不良行为
         alerts.extend(cls._check_penalties(data.get("blxwArray", []), now))
@@ -165,13 +165,13 @@ class AlertManager:
                 
                 if begin_date >= now - timedelta(days=Config.ALERT_DAYS_NEW):
                     alerts.append(
-                        f"🎉 新增奖励：**{item.get('reason', '未知奖励')}** "
+                        f"🎉 新增良好：**{item.get('reason', '未知良好')}** "
                         f"（项目：{item.get('engName', '未知项目')}）"
                     )
                 
                 if end_date <= now + timedelta(days=Config.ALERT_DAYS_EXPIRE):
                     alerts.append(
-                        f"📌 奖励即将过期：**{item.get('reason', '未知奖励')}**，"
+                        f"📌 良好即将过期：**{item.get('reason', '未知良好')}**，"
                         f"到期日：{item.get('endDate')}"
                     )
             except ValueError:
