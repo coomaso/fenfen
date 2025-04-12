@@ -6,6 +6,7 @@ import logging
 import os
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional
+import hashlib
 
 # ========== 日志配置 ==========
 logging.basicConfig(
@@ -77,6 +78,55 @@ def save_data_locally(data: dict, filepath: str = Config.LOCAL_DATA_PATH):
     with open(filepath, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
+# ========== 数据对比优化 ==========
+def deep_sort(data):
+    """
+    Recursively sorts dictionaries and lists to ensure consistent order for comparison.
+    """
+    if isinstance(data, dict):
+        return {key: deep_sort(value) for key, value in sorted(data.items())}
+    elif isinstance(data, list):
+        return sorted(deep_sort(item) for item in data)
+    else:
+        return data
+
+def hash_data(data):
+    """
+    Generates a hash for the given data after sorting it.
+    """
+    sorted_data = deep_sort(data)
+    data_string = json.dumps(sorted_data, ensure_ascii=False)
+    return hashlib.sha256(data_string.encode("utf-8")).hexdigest()
+
+def get_diff_data(local_data: dict, new_data: dict) -> dict:
+    """
+    Compares the local and new data based on hashed values to detect any changes.
+    """
+    diff_data = {}
+    
+    # Hash the sections of the data and compare
+    local_integrity_hash = hash_data(local_data.get("cxdamxArray", []))
+    new_integrity_hash = hash_data(new_data.get("cxdamxArray", []))
+    
+    if local_integrity_hash != new_integrity_hash:
+        diff_data["cxdamxArray"] = new_data.get("cxdamxArray", [])
+
+    local_awards_hash = hash_data(local_data.get("lhxwArray", []))
+    new_awards_hash = hash_data(new_data.get("lhxwArray", []))
+    
+    if local_awards_hash != new_awards_hash:
+        diff_data["lhxwArray"] = new_data.get("lhxwArray", [])
+
+    local_penalties_hash = hash_data(local_data.get("blxwArray", []))
+    new_penalties_hash = hash_data(new_data.get("blxwArray", []))
+    
+    if local_penalties_hash != new_penalties_hash:
+        diff_data["blxwArray"] = new_data.get("blxwArray", [])
+    
+    diff_data["cioName"] = new_data.get("cioName", "未知企业")
+
+    return diff_data
+
 # ========== 报告生成 ==========
 class CreditReportGenerator:
     @staticmethod
@@ -116,8 +166,6 @@ class CreditReportGenerator:
                 if idx < len(awards) - 1:
                     content.append("\n")
         return "\n".join(content)
-
-
 
     @staticmethod
     def format_bad_behaviors(data: Dict) -> str:
@@ -195,18 +243,6 @@ class AlertManager:
             except Exception:
                 continue
         return alerts
-
-# ========== 数据对比 ==========
-def get_diff_data(local_data: dict, new_data: dict) -> dict:
-    diff_data = {}
-    if local_data.get("cxdamxArray") != new_data.get("cxdamxArray"):
-        diff_data["cxdamxArray"] = new_data.get("cxdamxArray", [])
-    if local_data.get("lhxwArray") != new_data.get("lhxwArray"):
-        diff_data["lhxwArray"] = new_data.get("lhxwArray", [])
-    if local_data.get("blxwArray") != new_data.get("blxwArray"):
-        diff_data["blxwArray"] = new_data.get("blxwArray", [])
-    diff_data["cioName"] = new_data.get("cioName", "未知企业")
-    return diff_data
 
 # ========== 主程序 ==========
 def main():
