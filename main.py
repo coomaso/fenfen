@@ -98,7 +98,7 @@ class CreditReportGenerator:
     def format_project_awards(data: Dict) -> str:
         awards = data.get("lhxwArray", [])
         total_score = sum(float(item.get("realValue", 0)) for item in awards if item.get("realValue"))
-        content = ["", f"**🏆 良好行为汇总（总加分：<font color='green'><b>{total_score}</b></font>）**"]
+        content = ["", f"**🏆 良好行为汇总（总加分：<font color='red'>**{total_score}**</font>）**"]
         
         if not awards:
             content.append("- 暂无良好行为记录")
@@ -123,7 +123,7 @@ class CreditReportGenerator:
     def format_bad_behaviors(data: Dict) -> str:
         bad_behaviors = data.get("blxwArray", [])
         total_score = sum(abs(item.get("tbValue", 0)) for item in bad_behaviors if item.get("tbValue") is not None)
-        content = ["", f"**⚠️ 不良行为记录（总扣分：<font color='red'><b>{total_score}</b></font>）**"]
+        content = ["", f"**⚠️ 不良行为记录（总扣分：<font color='green'>**{total_score}**</font>）**"]
         
         if not bad_behaviors:
             content.append("- 无不良行为记录")
