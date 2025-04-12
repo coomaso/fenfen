@@ -19,7 +19,7 @@ logging.basicConfig(
 
 # ========== 配置参数 ==========
 class Config:
-    WEBHOOK_URL = os.getenv("WEBHOOK_URL", "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=84124f9b-f26f-4a0f-b9d8-6661cfa47abf")
+    WEBHOOK_URL = os.getenv("WEBHOOK_URL", "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=d42183fc-fb71-4c25-a123-7a61fb83fad5")
     AES_KEY = os.getenv("AES_KEY", "6875616E6779696E6875616E6779696E").encode("utf-8")
     AES_IV = os.getenv("AES_IV", "sskjKingFree5138").encode("utf-8")
     API_URL = os.getenv("API_URL", "http://106.15.60.27:22222/ycdc/bakCmisYcOrgan/getCurrentIntegrityDetails")
@@ -106,7 +106,7 @@ class CreditReportGenerator:
             for idx, item in enumerate(awards):
                 score_str = f"<font color='red'>**{item.get('realValue', '未知')} 分**</font>"
                 content.extend([
-                    f"- **项目**: {item.get('engName', '未知项目')}",
+                    f"  - **项目**: {item.get('engName', '未知项目')}",
                     f"  - 加分值: {score_str}",
                     f"  - 奖项: {item.get('reason', '未知原因')}",
                     f"  - 等级: {item.get('bzXwlb', '未知等级')}",
@@ -126,7 +126,7 @@ class CreditReportGenerator:
         content = ["", f"**⚠️ 不良行为记录（总扣分：<font color='green'>**{total_score}**</font>）**"]
         
         if not bad_behaviors:
-            content.append("- 无不良行为记录")
+            content.append("  - 无不良行为记录")
         else:
             for i, item in enumerate(bad_behaviors):
                 score = abs(item.get("tbValue", 0))
