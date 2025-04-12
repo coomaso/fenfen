@@ -6,7 +6,6 @@ import logging
 import os
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional
-import hashlib
 
 # ========== 日志配置 ==========
 logging.basicConfig(
@@ -20,7 +19,7 @@ logging.basicConfig(
 
 # ========== 配置参数 ==========
 class Config:
-    WEBHOOK_URL = os.getenv("WEBHOOK_URL", "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=d42183fc-fb71-4c25-a123-7a61fb83fad5")
+    WEBHOOK_URL = os.getenv("WEBHOOK_URL", "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=84124f9b-f26f-4a0f-b9d8-6661cfa47abf")
     AES_KEY = os.getenv("AES_KEY", "6875616E6779696E6875616E6779696E").encode("utf-8")
     AES_IV = os.getenv("AES_IV", "sskjKingFree5138").encode("utf-8")
     API_URL = os.getenv("API_URL", "http://106.15.60.27:22222/ycdc/bakCmisYcOrgan/getCurrentIntegrityDetails")
@@ -78,54 +77,21 @@ def save_data_locally(data: dict, filepath: str = Config.LOCAL_DATA_PATH):
     with open(filepath, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
-# ========== 数据对比优化 ==========
+# ========== 深度排序 ==========
 def deep_sort(data):
-    """
-    Recursively sorts dictionaries and lists to ensure consistent order for comparison.
-    """
-    if isinstance(data, dict):
+    if isinstance(data, list):
+        # Sort the list of dictionaries based on the first key, or any key of your choice
+        return sorted((deep_sort(item) for item in data), key=lambda x: str(x))
+    elif isinstance(data, dict):
+        # Sort dictionaries by key to ensure consistent order
         return {key: deep_sort(value) for key, value in sorted(data.items())}
-    elif isinstance(data, list):
-        return sorted(deep_sort(item) for item in data)
     else:
         return data
 
+# ========== 哈希生成 ==========
 def hash_data(data):
-    """
-    Generates a hash for the given data after sorting it.
-    """
     sorted_data = deep_sort(data)
-    data_string = json.dumps(sorted_data, ensure_ascii=False)
-    return hashlib.sha256(data_string.encode("utf-8")).hexdigest()
-
-def get_diff_data(local_data: dict, new_data: dict) -> dict:
-    """
-    Compares the local and new data based on hashed values to detect any changes.
-    """
-    diff_data = {}
-    
-    # Hash the sections of the data and compare
-    local_integrity_hash = hash_data(local_data.get("cxdamxArray", []))
-    new_integrity_hash = hash_data(new_data.get("cxdamxArray", []))
-    
-    if local_integrity_hash != new_integrity_hash:
-        diff_data["cxdamxArray"] = new_data.get("cxdamxArray", [])
-
-    local_awards_hash = hash_data(local_data.get("lhxwArray", []))
-    new_awards_hash = hash_data(new_data.get("lhxwArray", []))
-    
-    if local_awards_hash != new_awards_hash:
-        diff_data["lhxwArray"] = new_data.get("lhxwArray", [])
-
-    local_penalties_hash = hash_data(local_data.get("blxwArray", []))
-    new_penalties_hash = hash_data(new_data.get("blxwArray", []))
-    
-    if local_penalties_hash != new_penalties_hash:
-        diff_data["blxwArray"] = new_data.get("blxwArray", [])
-    
-    diff_data["cioName"] = new_data.get("cioName", "未知企业")
-
-    return diff_data
+    return hash(str(sorted_data))  # You can adjust this to generate a hash using any method you prefer
 
 # ========== 报告生成 ==========
 class CreditReportGenerator:
@@ -192,7 +158,6 @@ class CreditReportGenerator:
                     content.append("\n")
         return "\n".join(content)
 
-
     @classmethod
     def generate_full_report(cls, data: Dict) -> str:
         return "\n".join([
@@ -244,6 +209,18 @@ class AlertManager:
                 continue
         return alerts
 
+# ========== 数据对比 ==========
+def get_diff_data(local_data: dict, new_data: dict) -> dict:
+    diff_data = {}
+    if hash_data(local_data.get("cxdamxArray", [])) != hash_data(new_data.get("cxdamxArray", [])):
+        diff_data["cxdamxArray"] = new_data.get("cxdamxArray", [])
+    if hash_data(local_data.get("lhxwArray", [])) != hash_data(new_data.get("lhxwArray", [])):
+        diff_data["lhxwArray"] = new_data.get("lhxwArray", [])
+    if hash_data(local_data.get("blxwArray", [])) != hash_data(new_data.get("blxwArray", [])):
+        diff_data["blxwArray"] = new_data.get("blxwArray", [])
+    diff_data["cioName"] = new_data.get("cioName", "未知企业")
+    return diff_data
+
 # ========== 主程序 ==========
 def main():
     try:
@@ -288,14 +265,9 @@ def main():
                 CreditReportGenerator.format_bad_behaviors,
             ]:
                 report = report_func(new_data)
-                for part in split_markdown_content(report):
+                parts = split_markdown_content(report)
+                for part in parts:
                     send_wechat_markdown(part)
 
-            logging.info("✅ 新数据报告发送完成")
-        else:
-            logging.info("📡 数据未变化，无需推送")
     except Exception as e:
-        logging.exception(f"程序异常: {str(e)}")
-
-if __name__ == "__main__":
-    main()
+        logging.error(f"程序异常: {str(e)}")
