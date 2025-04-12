@@ -5,6 +5,7 @@ import base64
 import logging
 import os
 from datetime import datetime, timedelta
+from typing import List, Dict, Optional
 
 # ========== 日志配置 ==========
 logging.basicConfig(
@@ -49,7 +50,7 @@ def send_wechat_markdown(content: str) -> bool:
         return False
 
 # ========== AES解密函数 ==========
-def decrypt_data(encrypted_data: str) -> dict:
+def decrypt_data(encrypted_data: str) -> Optional[dict]:
     """解密AES加密的数据"""
     try:
         cipher = AES.new(Config.AES_KEY, AES.MODE_CBC, Config.AES_IV)
@@ -59,12 +60,12 @@ def decrypt_data(encrypted_data: str) -> dict:
         return json.loads(decrypted_text)
     except Exception as e:
         logging.error(f"解密失败: {str(e)}")
-        return {}
+        return None
 
 # ========== 信用报告生成器 ==========
 class CreditReportGenerator:
     @staticmethod
-    def format_integrity_scores(data: dict) -> str:
+    def format_integrity_scores(data: Dict) -> str:
         """格式化诚信评分"""
         company_name = data.get("cioName", "未知企业")
         score_items = data.get("cxdamxArray", [])
@@ -83,7 +84,7 @@ class CreditReportGenerator:
         return "\n".join(content)
 
     @staticmethod
-    def format_project_awards(data: dict) -> str:
+    def format_project_awards(data: Dict) -> str:
         """格式化良好行为"""
         awards = data.get("lhxwArray", [])
         content = ["", "**🏆 良好行为汇总：**"]
@@ -103,7 +104,7 @@ class CreditReportGenerator:
         return "\n".join(content)
 
     @staticmethod
-    def format_bad_behaviors(data: dict) -> str:
+    def format_bad_behaviors(data: Dict) -> str:
         """格式化不良行为"""
         bad_behaviors = data.get("blxwArray", [])
         content = ["", "**⚠️ 不良行为记录：**"]
@@ -127,7 +128,7 @@ class CreditReportGenerator:
         return "\n".join(content)
 
     @classmethod
-    def generate_full_report(cls, data: dict) -> str:
+    def generate_full_report(cls, data: Dict) -> str:
         """生成完整信用报告"""
         report_parts = [
             cls.format_integrity_scores(data),
@@ -141,13 +142,13 @@ class AlertManager:
     DATE_FORMAT = "%Y-%m-%d"
     
     @classmethod
-    def check_alerts(cls, data: dict) -> List[str]:
+    def check_alerts(cls, data: Dict) -> List[str]:
         """检查新增和即将过期的事项"""
         alerts = []
         now = datetime.now()
         
         # 检查良好行为
-        alerts.extend(cls._check_awards(data.get("lhxwArray", []), now))
+        alerts.extend(cls._check_awards(data.get("lhxwArray", []), now)
         
         # 检查不良行为
         alerts.extend(cls._check_penalties(data.get("blxwArray", []), now))
