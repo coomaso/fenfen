@@ -1,18 +1,106 @@
+import json
+import requests
 from Crypto.Cipher import AES
 import base64
 
-# Here's the actual key string being parsed as UTF-8
-key_str = "6875616E6779696E6875616E6779696E"  # not hex parsed!
-key = key_str.encode("utf-8")                # 32 bytes (AES-256)
+# ===== 企业微信 Markdown 推送函数 =====
+def send_wexinqq_md(markdown_content):
+    webhook_url = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=84124f9b-f26f-4a0f-b9d8-6661cfa47abf"
 
-iv = b"sskjKingFree5138"                     # 16 bytes
+    payload = {
+        "msgtype": "markdown",
+        "markdown": {
+            "content": markdown_content
+        }
+    }
 
+    headers = {"Content-Type": "application/json"}
+    response = requests.post(webhook_url, data=json.dumps(payload), headers=headers)
+
+    if response.status_code == 200:
+        print("✅ 企业微信推送成功")
+    else:
+        print(f"❌ 推送失败：{response.status_code} - {response.text}")
+
+
+# ===== AES 解密函数（无填充，尾部补零） =====
 def decrypt_no_padding(ciphertext_b64):
+    key_str = "6875616E6779696E6875616E6779696E"  # 32 字节 key
+    key = key_str.encode("utf-8")
+    iv = b"sskjKingFree5138"  # 16 字节 IV
+
     cipher = AES.new(key, AES.MODE_CBC, iv)
     raw = base64.b64decode(ciphertext_b64)
     decrypted = cipher.decrypt(raw)
     return decrypted.rstrip(b"\x00").decode("utf-8")
 
-# Example usage
-enc_data = "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"  # your base64-encoded ciphertext
-print(decrypt_no_padding(enc_data))
+
+# ===== 格式化：企业信用通报（评分 + 获奖 + 不良） =====
+def format_full_summary(data):
+    company_name = data.get("cioName", "未知企业")
+    score_items = data.get("cxdamxArray", [])
+    awards = data.get("lhxwArray", [])
+    bad_behaviors = data.get("blxwArray", [])
+
+    content = f"#### 📋 {company_name} 信用情况通报\n"
+
+    # --- 1. 资质诚信评分 ---
+    content += "\n**🏅 资质诚信评分：**\n"
+    if not score_items:
+        content += "- 暂无评分数据。\n"
+    else:
+        for item in score_items:
+            content += (
+                f"- 资质：{item['zzmx']}\n"
+                f"  - 等级：{item['cxdj']}\n"
+                f"  - 得分：{item['score']}（基础分: {item['csf']}，扣分: {item['kf']}，加分: {item['zxjf']}）\n"
+            )
+
+    # --- 2. 项目获奖情况 ---
+    content += "\n**🏆 良好行为记录（加分项）：**\n"
+    if not awards:
+        content += "- 暂无良好行为数据。\n"
+    else:
+        for item in awards:
+            content += (
+                f"- **项目**：{item['engName']}\n"
+                f"  - 奖项：{item['reason']}\n"
+                f"  - 等级：{item['bzXwlb']}\n"
+                f"  - 有效期：{item['beginDate']} 至 {item['endDate']}\n"
+                f"  - 文号：{item.get('documentNumber', '无')}\n\n"
+            )
+
+    # --- 3. 不良行为记录 ---
+    content += "\n**⚠️ 不良行为记录（扣分项）：**\n"
+    if not bad_behaviors:
+        content += "- 无不良行为记录。\n"
+    else:
+        for i, item in enumerate(bad_behaviors, 1):
+            score = item.get("tbValue", 0)
+            score_str = f"**{score} 分**" if score >= 1 else f"{score} 分"
+            content += (
+                f"\n{i}. **项目**：{item['engName']}\n"
+                f"   - 事由：{item['reason']}\n"
+                f"   - 类别：{item['bzXwlb']}\n"
+                f"   - 扣分值：{score_str}\n"
+                f"   - 扣分编号：{item.get('kftzsbh', '无')}\n"
+                f"   - 扣分人员：{item.get('cfry', '—')}（证号：{item.get('cfryCertNum', '—')}）\n"
+                f"   - 有效期：{item['beginDate']} 至 {item['endDate']}\n"
+            )
+
+    return content
+
+
+# ===== 主程序入口 =====
+if __name__ == "__main__":
+    url = "https://www.ycjsjg.net/ycdc/bakCmisYcOrgan/getCurrentIntegrityDetails"
+    params = {"cecId": "4028e4ef4d5b0ad4014d5b1aa1f001ae"}
+    res = requests.get(url, params=params).json()
+
+    if res.get("code") == "0" and res.get("data"):
+        decrypted_text = decrypt_no_padding(res["data"])
+        decrypted_data = json.loads(decrypted_text)
+        markdown_report = format_full_summary(decrypted_data["data"])
+        send_wexinqq_md(markdown_report)
+    else:
+        print("❌ 接口请求失败或无数据")
