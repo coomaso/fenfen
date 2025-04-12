@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 WEBHOOK_URL = os.getenv("WEBHOOK_URL", "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=84124f9b-f26f-4a0f-b9d8-6661cfa47abf")
 AES_KEY = os.getenv("AES_KEY", "6875616E6779696E6875616E6779696E").encode("utf-8")
 AES_IV = os.getenv("AES_IV", "sskjKingFree5138").encode("utf-8")
-API_URL = os.getenv("API_URL", "http://106.15.60.27:6666/ycdc/bakCmisYcOrgan/getCurrentIntegrityDetails?cecId=4028e4ef4d5b0ad4014d5b1aa1f001ae")
+API_URL = os.getenv("API_URL", "http://106.15.60.27:22222/ycdc/bakCmisYcOrgan/getCurrentIntegrityDetails?cecId=4028e4ef4d5b0ad4014d5b1aa1f001ae")
 
 # ========== 企业微信 Markdown 推送函数 ==========
 def send_wexinqq_md(markdown_content):
