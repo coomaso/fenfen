@@ -26,16 +26,33 @@ class Config:
     CEC_ID = os.getenv("CEC_ID", "4028e4ef4d5b0ad4014d5b1aa1f001ae")
     ALERT_DAYS_NEW = int(os.getenv("ALERT_DAYS_NEW", 3))
     ALERT_DAYS_EXPIRE = int(os.getenv("ALERT_DAYS_EXPIRE", 30))
+    MAX_MSG_BYTES = 4000
 
-# ========== 企业微信推送函数 ==========
+# ========== 工具函数 ==========
+def split_markdown_content(content: str, max_bytes: int = Config.MAX_MSG_BYTES) -> List[str]:
+    """按 UTF-8 字节长度拆分 Markdown 消息"""
+    parts = []
+    lines = content.splitlines(keepends=True)
+    current = ""
+
+    for line in lines:
+        if len((current + line).encode("utf-8")) > max_bytes:
+            parts.append(current)
+            current = line
+        else:
+            current += line
+
+    if current:
+        parts.append(current)
+    return parts
+
 def send_wechat_markdown(content: str) -> bool:
-    """发送企业微信Markdown消息"""
+    """发送 Markdown 消息"""
     payload = {
         "msgtype": "markdown",
         "markdown": {"content": content}
     }
     headers = {"Content-Type": "application/json"}
-    
     try:
         response = requests.post(
             Config.WEBHOOK_URL,
@@ -49,9 +66,8 @@ def send_wechat_markdown(content: str) -> bool:
         logging.error(f"推送请求失败: {str(e)}")
         return False
 
-# ========== AES解密函数 ==========
 def decrypt_data(encrypted_data: str) -> Optional[dict]:
-    """解密AES加密的数据"""
+    """AES 解密"""
     try:
         cipher = AES.new(Config.AES_KEY, AES.MODE_CBC, Config.AES_IV)
         raw = base64.b64decode(encrypted_data)
@@ -66,49 +82,41 @@ def decrypt_data(encrypted_data: str) -> Optional[dict]:
 class CreditReportGenerator:
     @staticmethod
     def format_integrity_scores(data: Dict) -> str:
-        """格式化诚信评分"""
         company_name = data.get("cioName", "未知企业")
         score_items = data.get("cxdamxArray", [])
         content = [f"#### 📋 {company_name} 信用情况通报", "", "**🏅 资质诚信评分：**"]
-        
         if not score_items:
             content.append("- 暂无评分记录")
-        
         for item in score_items:
             content.extend([
                 f"  - 资质：{item.get('zzmx', '未知资质')}",
                 f"  - 等级：{item.get('cxdj', '未知等级')}",
                 f"  - 得分：{item.get('score', '无')}（基础分: {item.get('csf', '无')}，扣分: {item.get('kf', '无')}，加分: {item.get('zxjf', '无')}）"
             ])
-        
         return "\n".join(content)
 
     @staticmethod
     def format_project_awards(data: Dict) -> str:
-        """格式化良好行为"""
         awards = data.get("lhxwArray", [])
         content = ["", "**🏆 良好行为汇总：**"]
-        
         if not awards:
             content.append("- 暂无良好行为记录")
         else:
             for item in awards:
                 content.extend([
                     f"- **项目**: {item.get('engName', '未知项目')}",
+                    f"  - 加分值: {item.get('realValue', '未知')}",
                     f"  - 奖项: {item.get('reason', '未知原因')}",
                     f"  - 等级: {item.get('bzXwlb', '未知等级')}",
                     f"  - 有效期: {item.get('beginDate', '未知开始日期')} 至 {item.get('endDate', '未知结束日期')}",
                     f"  - 文号: {item.get('documentNumber', '无')}"
                 ])
-        
         return "\n".join(content)
 
     @staticmethod
     def format_bad_behaviors(data: Dict) -> str:
-        """格式化不良行为"""
         bad_behaviors = data.get("blxwArray", [])
         content = ["", "**⚠️ 不良行为记录：**"]
-        
         if not bad_behaviors:
             content.append("- 无不良行为记录")
         else:
@@ -124,18 +132,15 @@ class CreditReportGenerator:
                     f"   - 扣分人员：{item.get('cfry', '—')}（证号：{item.get('cfryCertNum', '—')}）",
                     f"   - 有效期：{item.get('beginDate', '未知开始日期')} 至 {item.get('endDate', '未知结束日期')}"
                 ])
-        
         return "\n".join(content)
 
     @classmethod
     def generate_full_report(cls, data: Dict) -> str:
-        """生成完整信用报告"""
-        report_parts = [
+        return "\n".join([
             cls.format_integrity_scores(data),
             cls.format_project_awards(data),
             cls.format_bad_behaviors(data)
-        ]
-        return "\n".join(report_parts)
+        ])
 
 # ========== 提醒管理器 ==========
 class AlertManager:
@@ -143,16 +148,10 @@ class AlertManager:
     
     @classmethod
     def check_alerts(cls, data: Dict) -> List[str]:
-        """检查新增和即将过期的事项"""
-        alerts = []
         now = datetime.now()
-        
-        # 检查良好行为
+        alerts = []
         alerts.extend(cls._check_awards(data.get("lhxwArray", []), now))
-        
-        # 检查不良行为
         alerts.extend(cls._check_penalties(data.get("blxwArray", []), now))
-        
         return alerts
 
     @classmethod
@@ -160,21 +159,13 @@ class AlertManager:
         alerts = []
         for item in items:
             try:
-                begin_date = datetime.strptime(item.get("beginDate", ""), cls.DATE_FORMAT)
-                end_date = datetime.strptime(item.get("endDate", ""), cls.DATE_FORMAT)
-                
-                if begin_date >= now - timedelta(days=Config.ALERT_DAYS_NEW):
-                    alerts.append(
-                        f"🎉 新增良好：**{item.get('reason', '未知良好')}** "
-                        f"（项目：{item.get('engName', '未知项目')}）"
-                    )
-                
-                if end_date <= now + timedelta(days=Config.ALERT_DAYS_EXPIRE):
-                    alerts.append(
-                        f"📌 良好即将过期：**{item.get('reason', '未知良好')}**，"
-                        f"到期日：{item.get('endDate')}"
-                    )
-            except ValueError:
+                begin = datetime.strptime(item.get("beginDate", ""), cls.DATE_FORMAT)
+                end = datetime.strptime(item.get("endDate", ""), cls.DATE_FORMAT)
+                if begin >= now - timedelta(days=Config.ALERT_DAYS_NEW):
+                    alerts.append(f"🎉 新增良好：**{item.get('reason')}**（项目：{item.get('engName')}）")
+                if end <= now + timedelta(days=Config.ALERT_DAYS_EXPIRE):
+                    alerts.append(f"📌 良好即将过期：**{item.get('reason')}**，到期日：{item.get('endDate')}")
+            except Exception:
                 continue
         return alerts
 
@@ -183,78 +174,52 @@ class AlertManager:
         alerts = []
         for item in items:
             try:
-                begin_date = datetime.strptime(item.get("beginDate", ""), cls.DATE_FORMAT)
-                end_date = datetime.strptime(item.get("endDate", ""), cls.DATE_FORMAT)
+                begin = datetime.strptime(item.get("beginDate", ""), cls.DATE_FORMAT)
+                end = datetime.strptime(item.get("endDate", ""), cls.DATE_FORMAT)
                 score = abs(item.get("tbValue", 0))
-                
-                if begin_date >= now - timedelta(days=Config.ALERT_DAYS_NEW):
-                    alerts.append(
-                        f"⚠️ 新增处罚：**{item.get('reason', '未知事由')}** "
-                        f"（项目：{item.get('engName', '未知项目')}，扣分：{score}）"
-                    )
-                
-                if end_date <= now + timedelta(days=Config.ALERT_DAYS_EXPIRE):
-                    alerts.append(
-                        f"⌛ 处罚即将过期：**{item.get('reason', '未知事由')}**，"
-                        f"到期日：{item.get('endDate')}"
-                    )
-            except ValueError:
+                if begin >= now - timedelta(days=Config.ALERT_DAYS_NEW):
+                    alerts.append(f"⚠️ 新增处罚：**{item.get('reason')}**（项目：{item.get('engName')}，扣分：{score}）")
+                if end <= now + timedelta(days=Config.ALERT_DAYS_EXPIRE):
+                    alerts.append(f"⌛ 处罚即将过期：**{item.get('reason')}**，到期日：{item.get('endDate')}")
+            except Exception:
                 continue
         return alerts
 
 # ========== 主程序 ==========
 def main():
     try:
-        # 1. 获取数据
         logging.info("请求接口数据...")
         api_url = f"{Config.API_URL}?cecId={Config.CEC_ID}"
         response = requests.get(api_url, timeout=30)
         response.raise_for_status()
-        
         raw_data = response.json()
-        logging.info(f"接口原始数据: {json.dumps(raw_data, ensure_ascii=False, indent=2)}")
-
         encrypted_data = raw_data.get("data")
-        logging.info(f"encrypted_data加密数据: {encrypted_data}")
         if not encrypted_data:
             logging.error("接口返回数据为空")
             return
-        
-        # 3. 解密数据
+
         decrypted_data = decrypt_data(encrypted_data)
-        logging.info(f"decrypted_data解密数据: {decrypted_data}")
-        if not decrypted_data:
-            logging.error("解密后数据为空")
+        if not decrypted_data or "data" not in decrypted_data:
+            logging.error("解密失败或缺失字段")
             return
-        
-        # 4. 提取有效数据
-        data = decrypted_data.get("data", {})
-        if not data:
-            logging.error("解密数据中缺失'data'字段")
-            logging.debug(f"完整解密数据: {json.dumps(decrypted_data, ensure_ascii=False, indent=2)}")
-            return
-        
-        # 5. 生成提醒和报告
+
+        data = decrypted_data["data"]
         alerts = AlertManager.check_alerts(data)
-        alerts_md = "\n".join([f"- {alert}" for alert in alerts]) if alerts else ""
-        
-        # 生成完整报告
-        report = "\n".join([
-            f"### 🚨 异常提醒（近{Config.ALERT_DAYS_NEW}天新增 / {Config.ALERT_DAYS_EXPIRE}天内到期）\n{alerts_md}\n" if alerts else "",
-            CreditReportGenerator.generate_full_report(data)
-        ])
-        
-        logging.info("生成的报告内容:\n" + report)
-        
-        # 6. 发送报告
-        if send_wechat_markdown(report):
-            logging.info("✅ 报告发送成功")
-        else:
-            logging.error("❌ 报告发送失败")
-            
-    except requests.exceptions.RequestException as e:
-        logging.error(f"请求失败: {str(e)}")
+        alert_md = "\n".join([f"- {a}" for a in alerts])
+        header = f"### 🚨 异常提醒（近{Config.ALERT_DAYS_NEW}天新增 / {Config.ALERT_DAYS_EXPIRE}天内到期）\n{alert_md}\n" if alerts else ""
+        report = header + CreditReportGenerator.generate_full_report(data)
+
+        # 拆分发送
+        parts = split_markdown_content(report)
+        for idx, part in enumerate(parts):
+            logging.info(f"发送第 {idx + 1} 段报告...")
+            if send_wechat_markdown(part):
+                logging.info(f"✅ 第 {idx + 1} 部分发送成功")
+            else:
+                logging.error(f"❌ 第 {idx + 1} 部分发送失败")
+
     except Exception as e:
         logging.exception(f"程序异常: {str(e)}")
+
 if __name__ == "__main__":
     main()
