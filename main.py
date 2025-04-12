@@ -101,15 +101,7 @@ if __name__ == "__main__":
 
     proxy_pool = [
         {"ip": "106.14.91.83", "port": 8443, "protocols": ["http", "socks4"]},
-        {"ip": "106.15.194.169", "port": 9100, "protocols": ["http"]},
-        {"ip": "218.77.183.214", "port": 5224, "protocols": ["http"]},
-        {"ip": "114.229.213.220", "port": 8089, "protocols": ["http"]},
-        {"ip": "1.202.174.38", "port": 80, "protocols": ["http"]},
-        {"ip": "111.175.156.197", "port": 8888, "protocols": ["socks5"]},
-        {"ip": "47.119.22.156", "port": 9098, "protocols": ["http", "socks4"]},
-        {"ip": "39.104.27.89", "port": 8001, "protocols": ["http", "socks4"]},
-        {"ip": "8.138.149.37", "port": 8080, "protocols": ["http", "socks4"]},
-        {"ip": "117.80.188.7", "port": 8089, "protocols": ["http"]},
+        {"ip": "106.15.60.27", "port": 6666, "protocols": ["http"]},
     ]
 
     success = False
