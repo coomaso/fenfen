@@ -210,15 +210,17 @@ def main():
         api_url = f"{Config.API_URL}?cecId={Config.CEC_ID}"
         response = requests.get(api_url, timeout=30)
         response.raise_for_status()
-        raw_json = response.json()
+        
+        raw_data = response.json()
+        logging.debug(f"接口原始数据: {json.dumps(raw_data, ensure_ascii=False, indent=2)}")
         
         # 2. 检查接口返回
-        if raw_json.get("code") != "0":
-            error_msg = raw_json.get("msg", "未知错误")
+        if raw_data.get("code") != "0":
+            error_msg = raw_data.get("msg", "未知错误") or "无错误信息"
             logging.error(f"接口返回异常: {error_msg}")
             return
         
-        encrypted_data = raw_json.get("data")
+        encrypted_data = raw_data.get("data")
         if not encrypted_data:
             logging.error("接口返回数据为空")
             return
@@ -233,19 +235,23 @@ def main():
         data = decrypted_data.get("data", {})
         if not data:
             logging.error("解密数据中缺失'data'字段")
+            logging.debug(f"完整解密数据: {json.dumps(decrypted_data, ensure_ascii=False, indent=2)}")
             return
         
         # 5. 生成提醒和报告
         alerts = AlertManager.check_alerts(data)
         alerts_md = "\n".join([f"- {alert}" for alert in alerts]) if alerts else ""
         
-        full_report = "\n".join([
+        # 生成完整报告
+        report = "\n".join([
             f"### 🚨 异常提醒（近{Config.ALERT_DAYS_NEW}天新增 / {Config.ALERT_DAYS_EXPIRE}天内到期）\n{alerts_md}\n" if alerts else "",
             CreditReportGenerator.generate_full_report(data)
         ])
         
+        logging.info("生成的报告内容:\n" + report)
+        
         # 6. 发送报告
-        if send_wechat_markdown(full_report):
+        if send_wechat_markdown(report):
             logging.info("✅ 报告发送成功")
         else:
             logging.error("❌ 报告发送失败")
@@ -254,6 +260,5 @@ def main():
         logging.error(f"请求失败: {str(e)}")
     except Exception as e:
         logging.exception(f"程序异常: {str(e)}")
-
 if __name__ == "__main__":
     main()
