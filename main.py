@@ -213,13 +213,7 @@ def main():
         
         raw_data = response.json()
         logging.info(f"接口原始数据: {json.dumps(raw_data, ensure_ascii=False, indent=2)}")
-        
-        # 2. 检查接口返回
-        if raw_data.get("code") != "0":
-            error_msg = raw_data.get("msg", "未知错误") or "无错误信息"
-            logging.error(f"接口返回异常: {error_msg}")
-            return
-        
+
         encrypted_data = raw_data.get("data")
         logging.info(f"encrypted_data加密数据: {encrypted_data}")
         if not encrypted_data:
