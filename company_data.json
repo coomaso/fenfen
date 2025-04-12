@@ -3,6 +3,18 @@
     {
       "valid": 12,
       "jfqyzz": "建筑业企业资质_施工总承包_建筑工程_壹级",
+      "reason": "县（市区）安全、质量观摩示范工程",
+      "beginDate": "2024-06-11",
+      "realValue": 2.0,
+      "engName": "古老背路安置房（B1、B8及3#、4#）工程施工",
+      "tbValue": 2.0,
+      "endDate": "2025-06-11",
+      "bzXwlb": "施工_项目获奖_县市区级",
+      "documentNumber": "猇亭安全月观摩"
+    },
+    {
+      "valid": 12,
+      "jfqyzz": "建筑业企业资质_施工总承包_建筑工程_壹级",
       "reason": "承建单位市优质工程",
       "beginDate": "2024-07-01",
       "realValue": 4.0,
