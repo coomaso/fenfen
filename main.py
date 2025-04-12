@@ -92,11 +92,10 @@ def format_bad_behaviors(data):
 # ========== 主程序入口 ==========
 if __name__ == "__main__":
     try:
-        url = "http://106.15.60.27:6666/ycdc/bakCmisYcOrgan/getCurrentIntegrityDetails"
-        params = {"cecId": "4028e4ef4d5b0ad4014d5b1aa1f001ae"}
+        url = "https://www.ycjsjg.net/ycdc/bakCmisYcOrgan/getCurrentIntegrityDetails?cecId=4028e4ef4d5b0ad4014d5b1aa1f001ae"
 
         logging.info("请求接口数据中...")
-        res = requests.get(url, params=params, timeout=10)
+        res = requests.get(url, timeout=60)
         res.raise_for_status()
         raw_json = res.json()
 
