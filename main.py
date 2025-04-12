@@ -104,7 +104,7 @@ def main():
         response.raise_for_status()
         
         raw_data = response.json()
-        logging.debug(f"接口原始数据: {json.dumps(raw_data, ensure_ascii=False, indent=2)}")
+        logging.info(f"接口原始数据: {json.dumps(raw_data, ensure_ascii=False, indent=2)}")
         
         # 2. 检查接口返回
         if raw_data.get("code") != "0":
