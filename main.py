@@ -221,12 +221,14 @@ def main():
             return
         
         encrypted_data = raw_data.get("data")
+        logging.info(f"encrypted_data加密数据: {encrypted_data}")
         if not encrypted_data:
             logging.error("接口返回数据为空")
             return
         
         # 3. 解密数据
         decrypted_data = decrypt_data(encrypted_data)
+        logging.info(f"decrypted_data解密数据: {decrypted_data}")
         if not decrypted_data:
             logging.error("解密后数据为空")
             return
