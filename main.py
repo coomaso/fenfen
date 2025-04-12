@@ -40,7 +40,7 @@ def decrypt_no_padding(ciphertext_b64):
     decrypted = cipher.decrypt(raw)
     return decrypted.rstrip(b"\x00").decode("utf-8")
 
-# ===== 格式化：诚信评分 =====
+# ===== 格式化函数 =====
 def format_integrity_score(data):
     company_name = data.get("cioName", "未知企业")
     score_items = data.get("cxdamxArray", [])
@@ -58,7 +58,6 @@ def format_integrity_score(data):
             )
     return content
 
-# ===== 格式化：良好行为 =====
 def format_project_awards(data):
     awards = data.get("lhxwArray", [])
     content = "\n**🏆 良好行为汇总：**\n"
@@ -75,7 +74,6 @@ def format_project_awards(data):
             )
     return content
 
-# ===== 格式化：不良行为 =====
 def format_bad_behaviors(data):
     bad_behaviors = data.get("blxwArray", [])
     content = "\n**⚠️ 不良行为记录（扣分项）：**\n"
@@ -96,35 +94,47 @@ def format_bad_behaviors(data):
             )
     return content
 
-# ===== 主程序入口 =====
+# ===== 主函数 =====
 if __name__ == "__main__":
     url = "https://www.ycjsjg.net/ycdc/bakCmisYcOrgan/getCurrentIntegrityDetails"
     params = {"cecId": "4028e4ef4d5b0ad4014d5b1aa1f001ae"}
 
-    # === IP代理池 ===
-    ip_pool = [
-        "43.153.15.23", "43.153.8.210", "43.153.2.82", "43.153.5.109", "43.153.13.149",
-        "43.153.12.107", "43.153.4.199", "43.153.9.80", "43.153.8.196", "43.153.10.210",
-        "43.153.7.172", "43.153.11.118", "43.153.5.31", "43.153.2.235", "43.153.2.3"
+    proxy_pool = [
+        {"ip": "106.14.91.83", "port": 8443, "protocols": ["http", "socks4"]},
+        {"ip": "106.15.194.169", "port": 9100, "protocols": ["http"]},
+        {"ip": "218.77.183.214", "port": 5224, "protocols": ["http"]},
+        {"ip": "114.229.213.220", "port": 8089, "protocols": ["http"]},
+        {"ip": "1.202.174.38", "port": 80, "protocols": ["http"]},
+        {"ip": "111.175.156.197", "port": 8888, "protocols": ["socks5"]},
+        {"ip": "47.119.22.156", "port": 9098, "protocols": ["http", "socks4"]},
+        {"ip": "39.104.27.89", "port": 8001, "protocols": ["http", "socks4"]},
+        {"ip": "8.138.149.37", "port": 8080, "protocols": ["http", "socks4"]},
+        {"ip": "117.80.188.7", "port": 8089, "protocols": ["http"]},
     ]
 
     success = False
-    for ip in ip_pool:
-        proxy_str = f"http://{ip}:13001"
-        proxies = {"http": proxy_str, "https": proxy_str}
-        try:
-            logging.info(f"🌐 尝试代理：{proxy_str}")
-            res = requests.get(url, params=params, timeout=15, proxies=proxies)
-            res.raise_for_status()
-            res_json = res.json()
-            success = True
+
+    for proxy in proxy_pool:
+        ip = proxy["ip"]
+        port = proxy["port"]
+        for proto in proxy["protocols"]:
+            proxy_url = f"{proto}://{ip}:{port}"
+            proxies = {"http": proxy_url, "https": proxy_url}
+            try:
+                logging.info(f"🌐 尝试代理：{proxy_url}")
+                res = requests.get(url, params=params, timeout=15, proxies=proxies)
+                res.raise_for_status()
+                res_json = res.json()
+                success = True
+                break
+            except Exception as e:
+                logging.warning(f"⚠️ 失败：{proxy_url}，错误：{e}")
+                continue
+        if success:
             break
-        except Exception as e:
-            logging.warning(f"⚠️ 代理失败：{proxy_str}，原因：{e}")
-            continue
 
     if not success:
-        logging.error("❌ 所有代理尝试均失败")
+        logging.error("❌ 所有代理均失败")
     elif res_json.get("code") == "0" and res_json.get("data"):
         try:
             decrypted_text = decrypt_no_padding(res_json["data"])
