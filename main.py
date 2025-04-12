@@ -133,7 +133,7 @@ if __name__ == "__main__":
         response = requests.get(API_URL, timeout=30)
         response.raise_for_status()
         raw_json = response.json()
-
+        logging.info(f"接口数据{response.text}")
         if raw_json.get("code") != "0" or not raw_json.get("data"):
             logging.warning(f"❌ 接口返回异常或无数据: {raw_json.get('msg', '未知错误')}")
             exit()
