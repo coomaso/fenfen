@@ -2,7 +2,7 @@ name: Data Collection and Report
 
 on:
   schedule:
-    - cron: '*/60 * * * *'  # 每10分钟运行一次
+    - cron: '30 0 1 * *'  #Every month at 8:30 AM Beijing Time (12:30 AM UTC)
   push:
     branches: [ "main" ]
   pull_request:
