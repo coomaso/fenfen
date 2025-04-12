@@ -95,63 +95,62 @@ def format_report(data: dict) -> str:
     return "\n".join(report)
 
 # ========== 主程序 ==========
+# ========== 主程序 ==========
 def main():
     try:
         # 1. 获取数据
         logging.info("请求接口数据...")
         api_url = f"{Config.API_URL}?cecId={Config.CEC_ID}"
-        response = requests.get(api_url, timeout=30)
-        response.raise_for_status()
         
-        raw_data = response.json()
-        logging.info(f"接口原始数据: {json.dumps(raw_data, ensure_ascii=False, indent=2)}")
+        try:
+            response = requests.get(api_url, timeout=30)
+            response.raise_for_status()
+            raw_data = response.json()
+        except Exception as e:
+            logging.error(f"请求接口失败: {str(e)}")
+            return
+
+        logging.debug(f"接口原始数据: {json.dumps(raw_data, ensure_ascii=False, indent=2)}")
         
-        # 2. 检查接口返回
-        if raw_data.get("code") != "0":
-            error_msg = raw_data.get("msg", "未知错误")
+        # 2. 检查接口返回状态
+        if str(raw_data.get("code", "")) != "0":
+            error_msg = raw_data.get("msg") or "无错误信息"
             logging.error(f"接口返回异常: {error_msg}")
             return
         
+        # 3. 检查加密数据
         encrypted_data = raw_data.get("data")
         if not encrypted_data:
-            logging.error("接口返回数据为空")
+            logging.error("接口返回的加密数据为空")
             return
         
-        # 3. 解密数据
+        # 4. 解密数据
+        logging.info("开始解密数据...")
         decrypted_data = decrypt_data(encrypted_data)
         if not decrypted_data:
-            logging.error("解密后数据为空")
+            logging.error("解密失败或解密后数据为空")
             return
         
-        # 4. 提取有效数据
+        logging.debug(f"解密后数据: {json.dumps(decrypted_data, ensure_ascii=False, indent=2)}")
+        
+        # 5. 提取业务数据
         actual_data = decrypted_data.get("data", {})
         if not actual_data:
-            logging.error("解密数据中缺失'data'字段")
-            logging.debug(f"完整解密数据: {json.dumps(decrypted_data, ensure_ascii=False, indent=2)}")
+            logging.error("解密数据中缺少业务数据字段")
             return
         
-        # 5. 生成并发送报告
+        # 6. 生成报告
         report = format_report(actual_data)
-        logging.info("生成的报告内容:\n" + report)
+        logging.info("报告生成成功，准备发送...")
         
-        # 发送到企业微信
-        payload = {
-            "msgtype": "markdown",
-            "markdown": {"content": report}
-        }
-        response = requests.post(
-            Config.WEBHOOK_URL,
-            json=payload,
-            headers={"Content-Type": "application/json"},
-            timeout=10
-        )
-        response.raise_for_status()
-        logging.info("✅ 报告发送成功")
-        
-    except requests.exceptions.RequestException as e:
-        logging.error(f"请求失败: {str(e)}")
+        # 7. 发送报告
+        if send_wechat_markdown(report):
+            logging.info("✅ 报告发送成功")
+        else:
+            logging.warning("⚠️ 报告发送失败")
+            
     except Exception as e:
-        logging.exception(f"程序异常: {str(e)}")
+        logging.exception(f"主程序异常: {str(e)}")
 
 if __name__ == "__main__":
     main()
