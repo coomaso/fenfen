@@ -104,7 +104,7 @@ class CreditReportGenerator:
             content.append("- 暂无良好行为记录")
         else:
             for idx, item in enumerate(awards):
-                score_str = f"<font color='red'><b>{item.get('realValue', '未知')} 分</b></font>"
+                score_str = f"<font color='red'>**{item.get('realValue', '未知')} 分**</font>"
                 content.extend([
                     f"- **项目**: {item.get('engName', '未知项目')}",
                     f"  - 加分值: {score_str}",
@@ -130,7 +130,7 @@ class CreditReportGenerator:
         else:
             for i, item in enumerate(bad_behaviors):
                 score = abs(item.get("tbValue", 0))
-                score_str = f"<font color='green'><b>{score} 分</b></font>"
+                score_str = f"<font color='green'>**{score} 分**</font>"
                 content.extend([
                     f"{i+1}. **项目**：{item.get('engName', '未知项目')}",
                     f"   - 事由：{item.get('reason', '未知原因')}",
