@@ -188,38 +188,71 @@ class AlertManager:
 # ========== 主程序 ==========
 def main():
     try:
+        # 1. 获取数据
         logging.info("请求接口数据...")
         api_url = f"{Config.API_URL}?cecId={Config.CEC_ID}"
         response = requests.get(api_url, timeout=30)
         response.raise_for_status()
+        
         raw_data = response.json()
+        logging.info(f"接口原始数据: {json.dumps(raw_data, ensure_ascii=False, indent=2)}")
+
         encrypted_data = raw_data.get("data")
+        logging.info(f"encrypted_data加密数据: {encrypted_data}")
         if not encrypted_data:
             logging.error("接口返回数据为空")
             return
-
+        
+        # 3. 解密数据
         decrypted_data = decrypt_data(encrypted_data)
-        if not decrypted_data or "data" not in decrypted_data:
-            logging.error("解密失败或缺失字段")
+        logging.info(f"decrypted_data解密数据: {decrypted_data}")
+        if not decrypted_data:
+            logging.error("解密后数据为空")
             return
-
-        data = decrypted_data["data"]
+        
+        # 4. 提取有效数据
+        data = decrypted_data.get("data", {})
+        if not data:
+            logging.error("解密数据中缺失'data'字段")
+            logging.debug(f"完整解密数据: {json.dumps(decrypted_data, ensure_ascii=False, indent=2)}")
+            return
+        
+        # 5. 生成提醒和报告
         alerts = AlertManager.check_alerts(data)
-        alert_md = "\n".join([f"- {a}" for a in alerts])
-        header = f"### 🚨 异常提醒（近{Config.ALERT_DAYS_NEW}天新增 / {Config.ALERT_DAYS_EXPIRE}天内到期）\n{alert_md}\n" if alerts else ""
-        report = header + CreditReportGenerator.generate_full_report(data)
-
-        # 拆分发送
-        parts = split_markdown_content(report)
-        for idx, part in enumerate(parts):
-            logging.info(f"发送第 {idx + 1} 段报告...")
-            if send_wechat_markdown(part):
-                logging.info(f"✅ 第 {idx + 1} 部分发送成功")
-            else:
-                logging.error(f"❌ 第 {idx + 1} 部分发送失败")
-
+        alerts_md = "\n".join([f"- {alert}" for alert in alerts]) if alerts else ""
+        
+        # 生成各部分报告
+        company_name = data.get("cioName", "未知企业")
+        
+        # 第一部分：提醒信息
+        if alerts:
+            alert_report = f"#### 📋 {company_name} 信用异常提醒\n\n" + \
+                          f"### 🚨 异常提醒（近{Config.ALERT_DAYS_NEW}天新增 / {Config.ALERT_DAYS_EXPIRE}天内到期）\n{alerts_md}"
+            if not send_wechat_markdown(alert_report):
+                logging.error("❌ 提醒信息发送失败")
+        
+        # 第二部分：诚信评分
+        integrity_report = CreditReportGenerator.format_integrity_scores(data)
+        if not send_wechat_markdown(integrity_report):
+            logging.error("❌ 诚信评分发送失败")
+        
+        # 第三部分：良好行为
+        awards_report = CreditReportGenerator.format_project_awards(data)
+        if not send_wechat_markdown(awards_report):
+            logging.error("❌ 良好行为发送失败")
+        
+        # 第四部分：不良行为
+        penalties_report = CreditReportGenerator.format_bad_behaviors(data)
+        if not send_wechat_markdown(penalties_report):
+            logging.error("❌ 不良行为发送失败")
+            
+        logging.info("✅ 所有报告部分发送完成")
+            
+    except requests.exceptions.RequestException as e:
+        logging.error(f"请求失败: {str(e)}")
     except Exception as e:
         logging.exception(f"程序异常: {str(e)}")
 
 if __name__ == "__main__":
     main()
+
