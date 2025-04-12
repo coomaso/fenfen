@@ -19,7 +19,7 @@ logging.basicConfig(
 
 # ========== 配置参数 ==========
 class Config:
-    WEBHOOK_URL = os.getenv("WEBHOOK_URL", "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=84124f9b-f26f-4a0f-b9d8-6661cfa47abf")
+    WEBHOOK_URL = os.getenv("WEBHOOK_URL", "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=xxxx")
     AES_KEY = os.getenv("AES_KEY", "6875616E6779696E6875616E6779696E").encode("utf-8")
     AES_IV = os.getenv("AES_IV", "sskjKingFree5138").encode("utf-8")
     API_URL = os.getenv("API_URL", "http://106.15.60.27:22222/ycdc/bakCmisYcOrgan/getCurrentIntegrityDetails")
@@ -27,39 +27,29 @@ class Config:
     ALERT_DAYS_NEW = int(os.getenv("ALERT_DAYS_NEW", 3))
     ALERT_DAYS_EXPIRE = int(os.getenv("ALERT_DAYS_EXPIRE", 30))
     MAX_MSG_BYTES = 4000
+    LOCAL_DATA_PATH = "company_data.json"
 
 # ========== 工具函数 ==========
 def split_markdown_content(content: str, max_bytes: int = Config.MAX_MSG_BYTES) -> List[str]:
-    """按 UTF-8 字节长度拆分 Markdown 消息"""
     parts = []
     lines = content.splitlines(keepends=True)
     current = ""
-
     for line in lines:
         if len((current + line).encode("utf-8")) > max_bytes:
             parts.append(current)
             current = line
         else:
             current += line
-
     if current:
         parts.append(current)
     return parts
 
 def send_wechat_markdown(content: str) -> bool:
-    """发送 Markdown 消息"""
-    payload = {
-        "msgtype": "markdown",
-        "markdown": {"content": content}
-    }
+    payload = {"msgtype": "markdown", "markdown": {"content": content}}
     headers = {"Content-Type": "application/json"}
     try:
-        response = requests.post(
-            Config.WEBHOOK_URL,
-            data=json.dumps(payload, ensure_ascii=False),
-            headers=headers,
-            timeout=10
-        )
+        response = requests.post(Config.WEBHOOK_URL, json=payload, headers=headers, timeout=10)
+        logging.info(f"企业微信响应: {response.status_code} - {response.text}")
         response.raise_for_status()
         return True
     except requests.exceptions.RequestException as e:
@@ -67,7 +57,6 @@ def send_wechat_markdown(content: str) -> bool:
         return False
 
 def decrypt_data(encrypted_data: str) -> Optional[dict]:
-    """AES 解密"""
     try:
         cipher = AES.new(Config.AES_KEY, AES.MODE_CBC, Config.AES_IV)
         raw = base64.b64decode(encrypted_data)
@@ -78,7 +67,17 @@ def decrypt_data(encrypted_data: str) -> Optional[dict]:
         logging.error(f"解密失败: {str(e)}")
         return None
 
-# ========== 信用报告生成器 ==========
+def load_data_locally(filepath: str = Config.LOCAL_DATA_PATH) -> dict:
+    if os.path.exists(filepath):
+        with open(filepath, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return {}
+
+def save_data_locally(data: dict, filepath: str = Config.LOCAL_DATA_PATH):
+    with open(filepath, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+# ========== 报告生成 ==========
 class CreditReportGenerator:
     @staticmethod
     def format_integrity_scores(data: Dict) -> str:
@@ -98,41 +97,53 @@ class CreditReportGenerator:
     @staticmethod
     def format_project_awards(data: Dict) -> str:
         awards = data.get("lhxwArray", [])
-        content = ["", "**🏆 良好行为汇总：**"]
+        total_score = sum(float(item.get("realValue", 0)) for item in awards if item.get("realValue"))
+        content = ["", f"**🏆 良好行为汇总（总加分：<font color='green'><b>{total_score}</b></font>）**"]
+        
         if not awards:
             content.append("- 暂无良好行为记录")
         else:
-            for item in awards:
+            for idx, item in enumerate(awards):
+                score_str = f"<font color='red'><b>{item.get('realValue', '未知')} 分</b></font>"
                 content.extend([
                     f"- **项目**: {item.get('engName', '未知项目')}",
-                    f"  - 加分值: {item.get('realValue', '未知')}",
+                    f"  - 加分值: {score_str}",
                     f"  - 奖项: {item.get('reason', '未知原因')}",
                     f"  - 等级: {item.get('bzXwlb', '未知等级')}",
-                    f"  - 有效期: {item.get('beginDate', '未知开始日期')} 至 {item.get('endDate', '未知结束日期')}",
+                    f"  - 有效期: {item.get('beginDate', '未知开始')} 至 {item.get('endDate', '未知结束')}",
                     f"  - 文号: {item.get('documentNumber', '无')}"
                 ])
+                if idx < len(awards) - 1:
+                    content.append("\n")
         return "\n".join(content)
+
+
 
     @staticmethod
     def format_bad_behaviors(data: Dict) -> str:
         bad_behaviors = data.get("blxwArray", [])
-        content = ["", "**⚠️ 不良行为记录：**"]
+        total_score = sum(abs(item.get("tbValue", 0)) for item in bad_behaviors if item.get("tbValue") is not None)
+        content = ["", f"**⚠️ 不良行为记录（总扣分：<font color='red'><b>{total_score}</b></font>）**"]
+        
         if not bad_behaviors:
             content.append("- 无不良行为记录")
         else:
-            for i, item in enumerate(bad_behaviors, 1):
+            for i, item in enumerate(bad_behaviors):
                 score = abs(item.get("tbValue", 0))
-                score_str = f"**{score} 分**" if score >= 1 else f"{score} 分"
+                score_str = f"<font color='green'><b>{score} 分</b></font>"
                 content.extend([
-                    f"\n{i}. **项目**：{item.get('engName', '未知项目')}",
+                    f"{i+1}. **项目**：{item.get('engName', '未知项目')}",
                     f"   - 事由：{item.get('reason', '未知原因')}",
                     f"   - 类别：{item.get('bzXwlb', '未知类别')}",
                     f"   - 扣分值：{score_str}",
                     f"   - 扣分编号：{item.get('kftzsbh', '无')}",
                     f"   - 扣分人员：{item.get('cfry', '—')}（证号：{item.get('cfryCertNum', '—')}）",
-                    f"   - 有效期：{item.get('beginDate', '未知开始日期')} 至 {item.get('endDate', '未知结束日期')}"
+                    f"   - 有效期：{item.get('beginDate', '未知')} 至 {item.get('endDate', '未知')}"
                 ])
+                if i < len(bad_behaviors) - 1:
+                    content.append("\n")
         return "\n".join(content)
+
 
     @classmethod
     def generate_full_report(cls, data: Dict) -> str:
@@ -142,7 +153,7 @@ class CreditReportGenerator:
             cls.format_bad_behaviors(data)
         ])
 
-# ========== 提醒管理器 ==========
+# ========== 提醒机制 ==========
 class AlertManager:
     DATE_FORMAT = "%Y-%m-%d"
     
@@ -185,74 +196,70 @@ class AlertManager:
                 continue
         return alerts
 
+# ========== 数据对比 ==========
+def get_diff_data(local_data: dict, new_data: dict) -> dict:
+    diff_data = {}
+    if local_data.get("cxdamxArray") != new_data.get("cxdamxArray"):
+        diff_data["cxdamxArray"] = new_data.get("cxdamxArray", [])
+    if local_data.get("lhxwArray") != new_data.get("lhxwArray"):
+        diff_data["lhxwArray"] = new_data.get("lhxwArray", [])
+    if local_data.get("blxwArray") != new_data.get("blxwArray"):
+        diff_data["blxwArray"] = new_data.get("blxwArray", [])
+    diff_data["cioName"] = new_data.get("cioName", "未知企业")
+    return diff_data
+
 # ========== 主程序 ==========
 def main():
     try:
-        # 1. 获取数据
         logging.info("请求接口数据...")
-        api_url = f"{Config.API_URL}?cecId={Config.CEC_ID}"
-        response = requests.get(api_url, timeout=30)
+        response = requests.get(f"{Config.API_URL}?cecId={Config.CEC_ID}", timeout=30)
         response.raise_for_status()
-        
-        raw_data = response.json()
-        logging.info(f"接口原始数据: {json.dumps(raw_data, ensure_ascii=False, indent=2)}")
 
+        raw_data = response.json()
         encrypted_data = raw_data.get("data")
-        logging.info(f"encrypted_data加密数据: {encrypted_data}")
         if not encrypted_data:
             logging.error("接口返回数据为空")
             return
         
-        # 3. 解密数据
         decrypted_data = decrypt_data(encrypted_data)
-        logging.info(f"decrypted_data解密数据: {decrypted_data}")
         if not decrypted_data:
             logging.error("解密后数据为空")
             return
         
-        # 4. 提取有效数据
-        data = decrypted_data.get("data", {})
-        if not data:
-            logging.error("解密数据中缺失'data'字段")
-            logging.debug(f"完整解密数据: {json.dumps(decrypted_data, ensure_ascii=False, indent=2)}")
+        new_data = decrypted_data.get("data", {})
+        if not new_data:
+            logging.error("解密数据中缺失 'data' 字段")
             return
-        
-        # 5. 生成提醒和报告
-        alerts = AlertManager.check_alerts(data)
-        alerts_md = "\n".join([f"- {alert}" for alert in alerts]) if alerts else ""
-        
-        # 生成各部分报告
-        company_name = data.get("cioName", "未知企业")
-        
-        # 第一部分：提醒信息
-        if alerts:
-            alert_report = f"#### 📋 {company_name} 信用异常提醒\n\n" + \
-                          f"### 🚨 异常提醒（近{Config.ALERT_DAYS_NEW}天新增 / {Config.ALERT_DAYS_EXPIRE}天内到期）\n{alerts_md}"
-            if not send_wechat_markdown(alert_report):
-                logging.error("❌ 提醒信息发送失败")
-        
-        # 第二部分：诚信评分
-        integrity_report = CreditReportGenerator.format_integrity_scores(data)
-        if not send_wechat_markdown(integrity_report):
-            logging.error("❌ 诚信评分发送失败")
-        
-        # 第三部分：良好行为
-        awards_report = CreditReportGenerator.format_project_awards(data)
-        if not send_wechat_markdown(awards_report):
-            logging.error("❌ 良好行为发送失败")
-        
-        # 第四部分：不良行为
-        penalties_report = CreditReportGenerator.format_bad_behaviors(data)
-        if not send_wechat_markdown(penalties_report):
-            logging.error("❌ 不良行为发送失败")
-            
-        logging.info("✅ 所有报告部分发送完成")
-            
-    except requests.exceptions.RequestException as e:
-        logging.error(f"请求失败: {str(e)}")
+
+        local_data = load_data_locally()
+        diff_data = get_diff_data(local_data, new_data)
+
+        if diff_data:
+            save_data_locally(new_data)
+
+            alerts = AlertManager.check_alerts(new_data)
+            if alerts:
+                alert_report = (
+                    f"#### 📋 {new_data.get('cioName', '企业')} 信用异常提醒\n\n"
+                    f"### 🚨 异常提醒（近{Config.ALERT_DAYS_NEW}天新增 / {Config.ALERT_DAYS_EXPIRE}天内到期）\n"
+                    + "\n".join(f"- {alert}" for alert in alerts)
+                )
+                send_wechat_markdown(alert_report)
+
+            for report_func in [
+                CreditReportGenerator.format_integrity_scores,
+                CreditReportGenerator.format_project_awards,
+                CreditReportGenerator.format_bad_behaviors,
+            ]:
+                report = report_func(new_data)
+                for part in split_markdown_content(report):
+                    send_wechat_markdown(part)
+
+            logging.info("✅ 新数据报告发送完成")
+        else:
+            logging.info("📡 数据未变化，无需推送")
     except Exception as e:
         logging.exception(f"程序异常: {str(e)}")
 
 if __name__ == "__main__":
     main()
-
