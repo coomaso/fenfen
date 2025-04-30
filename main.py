@@ -19,7 +19,7 @@ logging.basicConfig(
 
 # ========== 配置参数 ==========
 class Config:
-    WEBHOOK_URL = os.getenv("WEBHOOK_URL", "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=d42183fc-fb71-4c25-a123-7a61fb83fad5")
+    WEBHOOK_URL = os.environ["QYWX_URL"]
     AES_KEY = os.getenv("AES_KEY", "6875616E6779696E6875616E6779696E").encode("utf-8")
     AES_IV = os.getenv("AES_IV", "sskjKingFree5138").encode("utf-8")
     API_URL = os.getenv("API_URL", "http://106.15.60.27:22222/ycdc/bakCmisYcOrgan/getCurrentIntegrityDetails")
