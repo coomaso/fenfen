@@ -2,7 +2,7 @@ name: 信誉分监测及提醒
 
 on:
   schedule:
-    - cron: '*/10 * * * *'  #Every month at 8:30 AM Beijing Time (12:30 AM UTC)
+    - cron: '*/10 0-12 * * 1-6'  # UTC时间0:00-12:59 = 北京时间08:00-20:59，每10分钟
   push:
     branches: [ "main" ]
     
