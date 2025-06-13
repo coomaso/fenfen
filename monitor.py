@@ -3,7 +3,7 @@ import os
 import requests
 import base64
 import logging
-from datetime import datetime
+from datetime import datetime, date
 from Crypto.Cipher import AES
 from typing import Optional, Dict, Any, List
 
