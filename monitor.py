@@ -39,6 +39,22 @@ def compare_records(old_list: list, new_list: list) -> tuple:
     expired = [item for item in old_list if generate_signature(item) not in new_set]
     return added, expired
 
+
+def is_holiday_today() -> bool:
+    """判断今天是否为节假日（含调休）"""
+    today_str = date.today().strftime("%Y-%m-%d")
+    try:
+        resp = requests.get(f"https://timor.tech/api/holiday/info/{today_str}", timeout=5)
+        if resp.status_code == 200:
+            holiday_info = resp.json()
+            if holiday_info.get("holiday"):
+                logging.info(f"今日为节假日：{holiday_info['holiday'].get('name', '')}")
+                return True
+        return False
+    except Exception as e:
+        logging.warning(f"节假日接口调用失败，默认执行任务: {e}")
+        return False
+
 def format_records(records: List[Dict], record_type: str, max_display: int = 10) -> str:
     if not records:
         return ""
@@ -145,6 +161,9 @@ def fetch_new_data() -> Optional[dict]:
 
 # ========== 主流程 ==========
 def main():
+    if is_holiday_today():
+        logging.info("节假日跳过执行")
+        return
     old_data = load_local_data()
     new_data = fetch_new_data()
 
