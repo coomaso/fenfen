@@ -3,10 +3,6 @@ name: Data Collection and Report
 on:
   schedule:
     - cron: '30 0 1 * *'  #Every month at 8:30 AM Beijing Time (12:30 AM UTC)
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 permissions:
   contents: write
