@@ -1,0 +1,47 @@
+name: 信誉分监测及提醒
+
+on:
+  schedule:
+    - cron: '10 * * * *'  #Every month at 8:30 AM Beijing Time (12:30 AM UTC)
+
+permissions:
+  contents: write
+  
+jobs:
+  run_script:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.10"
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests pycryptodome loguru
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        
+    - name: Run the credit monitor script
+      env: 
+        QYWX_URL: ${{ secrets.QYWX_URL }}  # 添加此行以传递Secret
+      run: |
+        python3 monitor.py
+        
+    - name: Commit and push company_old_data.json to the repository
+      run: |
+        # 配置 Git 用户信息
+        git config user.name "coomaso"
+        git config user.email "coomaso@gmail.com"
+        
+        # 检查company_old_data.json是否有更改
+        git add company_old_data.json
+
+        # 提交更改，如果没有更改则跳过
+        git commit -m "Update company_old_data.json" || echo "No changes to commit" 
+
+        # 推送到远程仓库
+        git push origin main
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用 GitHub 默认的 GITHUB_TOKEN 来执行推送
