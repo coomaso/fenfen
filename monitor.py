@@ -9,7 +9,7 @@ from typing import Optional, Dict, Any, List
 
 # ========== 配置参数 ==========
 class Config:
-    WEBHOOK_URL = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=9b81f009-c046-4812-8690-76763d6b1abd"
+    WEBHOOK_URL = os.environ["QYWX_URL"]
     AES_KEY = os.getenv("AES_KEY", "6875616E6779696E6875616E6779696E").encode("utf-8")
     AES_IV = os.getenv("AES_IV", "sskjKingFree5138").encode("utf-8")
     API_URL = os.getenv("API_URL", "http://106.15.60.27:22222/ycdc/bakCmisYcOrgan/getCurrentIntegrityDetails")
@@ -62,7 +62,7 @@ def format_records(records: List[Dict], record_type: str, max_display: int = 10)
 
     if len(records) > max_display:
         lines.append(f"> ...及其他 {len(records) - max_display} 条记录未展示")
-    lines.append("---")
+
     return "\n".join(lines) + "\n"
 
 def send_wechat_notification(content: str) -> bool:
@@ -74,7 +74,6 @@ def send_wechat_notification(content: str) -> bool:
         f"> **检测时间**：{datetime.now().strftime('%Y-%m-%d %H:%M')}\n\n"
     )
     footer = (
-        "\n---\n"
         "> 本通知由系统自动生成，如有疑问请联系情报部门\n"
     )
     full_content = summary + content + footer
@@ -181,7 +180,7 @@ def main():
             f"- 📌 良好记录过期：**{len(lhxw_expired)}** 条\n"
             f"- ⚠️ 新增处罚记录：**{len(blxw_added)}** 条\n"
             f"- ⌛ 处罚记录过期：**{len(blxw_expired)}** 条\n"
-            "---\n\n"
+            "\n\n"
         )
         content = summary + content
 
