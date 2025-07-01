@@ -3,42 +3,6 @@
     {
       "valid": 12,
       "jfqyzz": "建筑业企业资质_施工总承包_建筑工程_壹级",
-      "reason": "承建单位市优质工程",
-      "beginDate": "2024-07-01",
-      "realValue": 4.0,
-      "engName": "白沙路居住、商业、商务（碧桂园凤凰城）项目E区（18#、19#楼）",
-      "tbValue": 4.0,
-      "endDate": "2025-07-01",
-      "bzXwlb": "施工_项目获奖_市级",
-      "documentNumber": "宜市建协〔2024〕14号"
-    },
-    {
-      "valid": 12,
-      "jfqyzz": "建筑业企业资质_施工总承包_建筑工程_壹级",
-      "reason": "承建单位市优质工程",
-      "beginDate": "2024-07-01",
-      "realValue": 4.0,
-      "engName": "白沙路居住、商业、商务（碧桂园凤凰城）项目D区二期（22#、23#楼）",
-      "tbValue": 4.0,
-      "endDate": "2025-07-01",
-      "bzXwlb": "施工_项目获奖_市级",
-      "documentNumber": "宜市建协〔2024〕14号"
-    },
-    {
-      "valid": 12,
-      "jfqyzz": "建筑业企业资质_施工总承包_建筑工程_壹级",
-      "reason": "承建单位市优质工程",
-      "beginDate": "2024-07-01",
-      "realValue": 4.0,
-      "engName": "宜昌市点军区巴王店二路（奥体一路-韩家坝路）市政道路工程",
-      "tbValue": 4.0,
-      "endDate": "2025-07-01",
-      "bzXwlb": "施工_项目获奖_市级",
-      "documentNumber": "宜市建协〔2024〕14号"
-    },
-    {
-      "valid": 12,
-      "jfqyzz": "建筑业企业资质_施工总承包_建筑工程_壹级",
       "reason": "市安全、质量观摩示范工程",
       "beginDate": "2024-09-13",
       "realValue": 4.0,
@@ -47,18 +11,6 @@
       "endDate": "2025-09-13",
       "bzXwlb": "施工_项目获奖_市级",
       "documentNumber": "宜昌质量观摩2024"
-    },
-    {
-      "valid": 12,
-      "jfqyzz": "建筑业企业资质_专业承包_建筑装修装饰工程_壹级",
-      "reason": "承建单位市优质建筑装饰工程奖",
-      "beginDate": "2024-10-10",
-      "realValue": 4.0,
-      "engName": "白沙路居住、商业、商务（碧桂园凤凰城）项目E区",
-      "tbValue": 4.0,
-      "endDate": "2025-10-10",
-      "bzXwlb": "施工_项目获奖_市级",
-      "documentNumber": "宜装协[2024]1号"
     },
     {
       "valid": 12,
@@ -91,6 +43,18 @@
       "beginDate": "2024-10-10",
       "realValue": 4.0,
       "engName": "城市之光",
+      "tbValue": 4.0,
+      "endDate": "2025-10-10",
+      "bzXwlb": "施工_项目获奖_市级",
+      "documentNumber": "宜装协[2024]1号"
+    },
+    {
+      "valid": 12,
+      "jfqyzz": "建筑业企业资质_专业承包_建筑装修装饰工程_壹级",
+      "reason": "承建单位市优质建筑装饰工程奖",
+      "beginDate": "2024-10-10",
+      "realValue": 4.0,
+      "engName": "白沙路居住、商业、商务（碧桂园凤凰城）项目E区",
       "tbValue": 4.0,
       "endDate": "2025-10-10",
       "bzXwlb": "施工_项目获奖_市级",
@@ -188,7 +152,7 @@
     }
   ],
   "cioName": "湖北盛荣建设集团有限公司",
-  "jfsj": "2025-06-30",
+  "jfsj": "2025-07-01",
   "eqtName": "施工",
   "blxwArray": [
     {
@@ -317,5 +281,5 @@
     }
   ],
   "cecId": "4028e4ef4d5b0ad4014d5b1aa1f001ae",
-  "cechId": "8a9b954d95659d870197bd8fd80a06c2"
+  "cechId": "8a9b954d95659d870197c2bec3381b26"
 }
