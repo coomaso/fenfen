@@ -3,7 +3,7 @@ import os
 import requests
 import base64
 import logging
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from Crypto.Cipher import AES
 from typing import Optional, Dict, Any, List
 
@@ -72,6 +72,7 @@ def format_records(records: List[Dict], record_type: str, max_display: int = 10)
         lines.append(
             f"{i}. `{item.get('engName', '')}`\n"
             f"   - 原因：{item.get('reason', '')}\n"
+            f"   - 分值：{item.get('realValue', '')}\n"
             f"   - 文号：{item.get('documentNumber', '无') or '无'}\n"
             f"   - 有效期：{item.get('beginDate', '')} → {item.get('endDate', '')}\n"
         )
@@ -87,10 +88,10 @@ def send_wechat_notification(content: str) -> bool:
 
     summary = (
         "# 盛荣集团信用记录异动通知\n"
-        f"> **检测时间**：{datetime.now().strftime('%Y-%m-%d %H:%M')}\n\n"
+        f"> **检测时间**：{(datetime.now() + timedelta(hours=8)).strftime('%Y-%m-%d %H:%M')}\n\n"
     )
     footer = (
-        "> 本通知由系统自动生成，如有疑问请联系情报部门\n"
+        "> 本通知由系统自动生成，如有疑问请联系企业综合部\n"
     )
     full_content = summary + content + footer
 
