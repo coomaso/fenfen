@@ -18,7 +18,7 @@
       "reason": "承建单位市优质建筑装饰工程奖",
       "beginDate": "2024-10-10",
       "realValue": 4.0,
-      "engName": "生态体育公园项目",
+      "engName": "城市之光",
       "tbValue": 4.0,
       "endDate": "2025-10-10",
       "bzXwlb": "施工_项目获奖_市级",
@@ -54,7 +54,7 @@
       "reason": "承建单位市优质建筑装饰工程奖",
       "beginDate": "2024-10-10",
       "realValue": 4.0,
-      "engName": "宜昌市中心人民医院西区一号楼装修改造项目",
+      "engName": "生态体育公园项目",
       "tbValue": 4.0,
       "endDate": "2025-10-10",
       "bzXwlb": "施工_项目获奖_市级",
@@ -66,7 +66,7 @@
       "reason": "承建单位市优质建筑装饰工程奖",
       "beginDate": "2024-10-10",
       "realValue": 4.0,
-      "engName": "城市之光",
+      "engName": "宜昌市中心人民医院西区一号楼装修改造项目",
       "tbValue": 4.0,
       "endDate": "2025-10-10",
       "bzXwlb": "施工_项目获奖_市级",
@@ -113,22 +113,9 @@
     }
   ],
   "cioName": "湖北盛荣建设集团有限公司",
-  "jfsj": "2025-08-11",
+  "jfsj": "2025-08-12",
   "eqtName": "施工",
-  "blxwArray": [
-    {
-      "reason": "未采取覆盖、分段作业、择时施工、洒水抑尘、冲洗地面和车辆等有效防尘降尘措施的",
-      "endDate": "2025-08-12",
-      "kfqyzz": "建筑业企业资质_施工总承包_建筑工程_壹级",
-      "valid": 3,
-      "beginDate": "2025-05-12",
-      "realValue": 2.0,
-      "engName": "武汉协和宜昌医院建设项目一期施工工程",
-      "tbValue": 2.0,
-      "bzXwlb": "施工_质量安全建筑节能管理",
-      "kftzsbh": "202507380"
-    }
-  ],
+  "blxwArray": [],
   "cxdamxArray": [
     {
       "score": 104,
@@ -242,5 +229,5 @@
     }
   ],
   "cecId": "4028e4ef4d5b0ad4014d5b1aa1f001ae",
-  "cechId": "8a9b954d9853d355019895cbd4dc76a9"
+  "cechId": "8a9b954d9853d35501989af1f29b0b6b"
 }
