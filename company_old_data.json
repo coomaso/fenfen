@@ -73,6 +73,84 @@
       "documentNumber": "宜装协[2024]1号"
     },
     {
+      "valid": 12,
+      "jfqyzz": "建筑业企业资质_施工总承包_建筑工程_壹级",
+      "reason": "省优质结构工程",
+      "beginDate": "2025-05-16",
+      "hjyy": "长江水文宜昌科创中心",
+      "realValue": 3.0,
+      "engName": "长江水文宜昌科创中心",
+      "tbValue": 3.0,
+      "endDate": "2026-05-16",
+      "bzXwlb": "施工_项目获奖_省级",
+      "documentNumber": "鄂建质安协〔2025〕31号"
+    },
+    {
+      "valid": 12,
+      "jfqyzz": "建筑业企业资质_施工总承包_建筑工程_壹级",
+      "reason": "省安全文明工地",
+      "beginDate": "2025-05-16",
+      "hjyy": "长江水文宜昌科创中心",
+      "realValue": 4.0,
+      "engName": "长江水文宜昌科创中心",
+      "tbValue": 4.0,
+      "endDate": "2026-05-16",
+      "bzXwlb": "施工_项目获奖_省级",
+      "documentNumber": "鄂建质安协〔2025〕32号"
+    },
+    {
+      "valid": 12,
+      "jfqyzz": "建筑业企业资质_施工总承包_建筑工程_壹级",
+      "reason": "省安全文明工地",
+      "beginDate": "2025-05-16",
+      "hjyy": "宜昌市西陵一路22号地块商住项目",
+      "realValue": 4.0,
+      "engName": "宜昌市西陵一路22号地块商住项目",
+      "tbValue": 4.0,
+      "endDate": "2026-05-16",
+      "bzXwlb": "施工_项目获奖_省级",
+      "documentNumber": "鄂建质安协〔2025〕32号"
+    },
+    {
+      "valid": 12,
+      "jfqyzz": "建筑业企业资质_施工总承包_建筑工程_壹级",
+      "reason": "省安全文明工地",
+      "beginDate": "2025-05-16",
+      "hjyy": "古老背路安置房(B1、B8及3#、4#) 工程",
+      "realValue": 4.0,
+      "engName": "古老背路安置房（B1、B8及3#、4#）工程",
+      "tbValue": 4.0,
+      "endDate": "2026-05-16",
+      "bzXwlb": "施工_项目获奖_省级",
+      "documentNumber": "鄂建质安协〔2025〕32号"
+    },
+    {
+      "valid": 12,
+      "jfqyzz": "建筑业企业资质_施工总承包_建筑工程_壹级",
+      "reason": "省优质结构工程",
+      "beginDate": "2025-05-16",
+      "hjyy": "古老背路安置房(B1、B8及3#、 4#)工程(B1#)、(B8#)",
+      "realValue": 3.0,
+      "engName": "古老背路安置房（B1、B8及3#、4#）工程（B1#）、（B8#）",
+      "tbValue": 3.0,
+      "endDate": "2026-05-16",
+      "bzXwlb": "施工_项目获奖_省级",
+      "documentNumber": "鄂建质安协〔2025〕31号"
+    },
+    {
+      "valid": 12,
+      "jfqyzz": "建筑业企业资质_施工总承包_建筑工程_壹级",
+      "reason": "省优质结构工程",
+      "beginDate": "2025-05-16",
+      "hjyy": "宜昌市西陵一路22号地块商住项目",
+      "realValue": 3.0,
+      "engName": "宜昌市西陵一路22号地块商住项目",
+      "tbValue": 3.0,
+      "endDate": "2026-05-16",
+      "bzXwlb": "施工_项目获奖_省级",
+      "documentNumber": "鄂建质安协〔2025〕31号"
+    },
+    {
       "valid": 3,
       "jfqyzz": "建筑业企业资质_施工总承包_建筑工程_壹级",
       "reason": "安全文明施工红榜项目",
@@ -113,7 +191,7 @@
     }
   ],
   "cioName": "湖北盛荣建设集团有限公司",
-  "jfsj": "2025-08-15",
+  "jfsj": "2025-08-16",
   "eqtName": "施工",
   "blxwArray": [],
   "cxdamxArray": [
@@ -218,10 +296,10 @@
       "eqlId": "107023301"
     },
     {
-      "score": 108,
+      "score": 129,
       "zzmx": "建筑业企业资质_施工总承包_建筑工程_壹级",
-      "zxjf": 4,
-      "cxdj": "A级",
+      "zxjf": 25,
+      "cxdj": "AA级",
       "csf": 100,
       "kf": 0,
       "jcf": 4,
@@ -229,5 +307,5 @@
     }
   ],
   "cecId": "4028e4ef4d5b0ad4014d5b1aa1f001ae",
-  "cechId": "8a9b954d9853d3550198aa65f5b648bd"
+  "cechId": "8a9b954d9853d3550198aead470e5c87"
 }
