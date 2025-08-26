@@ -75,19 +75,6 @@
     {
       "valid": 12,
       "jfqyzz": "建筑业企业资质_施工总承包_建筑工程_壹级",
-      "reason": "省优质结构工程",
-      "beginDate": "2025-05-16",
-      "hjyy": "长江水文宜昌科创中心",
-      "realValue": 3.0,
-      "engName": "长江水文宜昌科创中心",
-      "tbValue": 3.0,
-      "endDate": "2026-05-16",
-      "bzXwlb": "施工_项目获奖_省级",
-      "documentNumber": "鄂建质安协〔2025〕31号"
-    },
-    {
-      "valid": 12,
-      "jfqyzz": "建筑业企业资质_施工总承包_建筑工程_壹级",
       "reason": "省安全文明工地",
       "beginDate": "2025-05-16",
       "hjyy": "古老背路安置房(B1、B8及3#、4#) 工程",
@@ -123,6 +110,19 @@
       "endDate": "2026-05-16",
       "bzXwlb": "施工_项目获奖_省级",
       "documentNumber": "鄂建质安协〔2025〕32号"
+    },
+    {
+      "valid": 12,
+      "jfqyzz": "建筑业企业资质_施工总承包_建筑工程_壹级",
+      "reason": "省优质结构工程",
+      "beginDate": "2025-05-16",
+      "hjyy": "长江水文宜昌科创中心",
+      "realValue": 3.0,
+      "engName": "长江水文宜昌科创中心",
+      "tbValue": 3.0,
+      "endDate": "2026-05-16",
+      "bzXwlb": "施工_项目获奖_省级",
+      "documentNumber": "鄂建质安协〔2025〕31号"
     },
     {
       "valid": 12,
@@ -240,7 +240,7 @@
     }
   ],
   "cioName": "湖北盛荣建设集团有限公司",
-  "jfsj": "2025-08-25",
+  "jfsj": "2025-08-26",
   "eqtName": "施工",
   "blxwArray": [
     {
@@ -385,5 +385,5 @@
     }
   ],
   "cecId": "4028e4ef4d5b0ad4014d5b1aa1f001ae",
-  "cechId": "8a9b954d9853d3550198dd05cf1f156b"
+  "cechId": "8a9b954d9853d3550198e30adcc52aed"
 }
