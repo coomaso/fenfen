@@ -54,7 +54,7 @@
       "reason": "承建单位市优质建筑装饰工程奖",
       "beginDate": "2024-10-10",
       "realValue": 4.0,
-      "engName": "宜昌市中心人民医院西区一号楼装修改造项目",
+      "engName": "城市之光",
       "tbValue": 4.0,
       "endDate": "2025-10-10",
       "bzXwlb": "施工_项目获奖_市级",
@@ -66,7 +66,7 @@
       "reason": "承建单位市优质建筑装饰工程奖",
       "beginDate": "2024-10-10",
       "realValue": 4.0,
-      "engName": "城市之光",
+      "engName": "宜昌市中心人民医院西区一号楼装修改造项目",
       "tbValue": 4.0,
       "endDate": "2025-10-10",
       "bzXwlb": "施工_项目获奖_市级",
@@ -275,7 +275,7 @@
     }
   ],
   "cioName": "湖北盛荣建设集团有限公司",
-  "jfsj": "2025-09-11",
+  "jfsj": "2025-09-12",
   "eqtName": "施工",
   "blxwArray": [
     {
@@ -420,5 +420,5 @@
     }
   ],
   "cecId": "4028e4ef4d5b0ad4014d5b1aa1f001ae",
-  "cechId": "8a9b954d99331ddc0199356f84fc0091"
+  "cechId": "8a9b954d99331ddc01993a95b8b71530"
 }
