@@ -6,30 +6,6 @@
       "reason": "承建单位市优质建筑装饰工程奖",
       "beginDate": "2024-10-10",
       "realValue": 4.0,
-      "engName": "白沙路居住、商业、商务（碧桂园凤凰城）项目E区",
-      "tbValue": 4.0,
-      "endDate": "2025-10-10",
-      "bzXwlb": "施工_项目获奖_市级",
-      "documentNumber": "宜装协[2024]1号"
-    },
-    {
-      "valid": 12,
-      "jfqyzz": "建筑业企业资质_专业承包_建筑装修装饰工程_壹级",
-      "reason": "承建单位市优质建筑装饰工程奖",
-      "beginDate": "2024-10-10",
-      "realValue": 4.0,
-      "engName": "城市之光",
-      "tbValue": 4.0,
-      "endDate": "2025-10-10",
-      "bzXwlb": "施工_项目获奖_市级",
-      "documentNumber": "宜装协[2024]1号"
-    },
-    {
-      "valid": 12,
-      "jfqyzz": "建筑业企业资质_专业承包_建筑装修装饰工程_壹级",
-      "reason": "承建单位市优质建筑装饰工程奖",
-      "beginDate": "2024-10-10",
-      "realValue": 4.0,
       "engName": "宜昌市中心人民医院西区一号楼装修改造项目",
       "tbValue": 4.0,
       "endDate": "2025-10-10",
@@ -55,6 +31,30 @@
       "beginDate": "2024-10-10",
       "realValue": 4.0,
       "engName": "国家税务总局宜昌高新技术产业开发区税务局综合业务办公用房维修改造项目",
+      "tbValue": 4.0,
+      "endDate": "2025-10-10",
+      "bzXwlb": "施工_项目获奖_市级",
+      "documentNumber": "宜装协[2024]1号"
+    },
+    {
+      "valid": 12,
+      "jfqyzz": "建筑业企业资质_专业承包_建筑装修装饰工程_壹级",
+      "reason": "承建单位市优质建筑装饰工程奖",
+      "beginDate": "2024-10-10",
+      "realValue": 4.0,
+      "engName": "白沙路居住、商业、商务（碧桂园凤凰城）项目E区",
+      "tbValue": 4.0,
+      "endDate": "2025-10-10",
+      "bzXwlb": "施工_项目获奖_市级",
+      "documentNumber": "宜装协[2024]1号"
+    },
+    {
+      "valid": 12,
+      "jfqyzz": "建筑业企业资质_专业承包_建筑装修装饰工程_壹级",
+      "reason": "承建单位市优质建筑装饰工程奖",
+      "beginDate": "2024-10-10",
+      "realValue": 4.0,
+      "engName": "城市之光",
       "tbValue": 4.0,
       "endDate": "2025-10-10",
       "bzXwlb": "施工_项目获奖_市级",
@@ -250,7 +250,7 @@
     }
   ],
   "cioName": "湖北盛荣建设集团有限公司",
-  "jfsj": "2025-10-07",
+  "jfsj": "2025-10-08",
   "eqtName": "施工",
   "blxwArray": [
     {
@@ -395,5 +395,5 @@
     }
   ],
   "cecId": "4028e4ef4d5b0ad4014d5b1aa1f001ae",
-  "cechId": "8a9b954d99947b080199bb5440ba1196"
+  "cechId": "8a9b954d99947b080199c07aa3b4264b"
 }
