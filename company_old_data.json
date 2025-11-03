@@ -53,15 +53,15 @@
     {
       "valid": 12,
       "jfqyzz": "建筑业企业资质_施工总承包_建筑工程_壹级",
-      "reason": "省安全文明工地",
+      "reason": "省优质结构工程",
       "beginDate": "2025-05-16",
       "hjyy": "宜昌市西陵一路22号地块商住项目",
-      "realValue": 4.0,
+      "realValue": 3.0,
       "engName": "宜昌市西陵一路22号地块商住项目",
-      "tbValue": 4.0,
+      "tbValue": 3.0,
       "endDate": "2026-05-16",
       "bzXwlb": "施工_项目获奖_省级",
-      "documentNumber": "鄂建质安协〔2025〕32号"
+      "documentNumber": "鄂建质安协〔2025〕31号"
     },
     {
       "valid": 12,
@@ -79,15 +79,15 @@
     {
       "valid": 12,
       "jfqyzz": "建筑业企业资质_施工总承包_建筑工程_壹级",
-      "reason": "省优质结构工程",
+      "reason": "省安全文明工地",
       "beginDate": "2025-05-16",
       "hjyy": "宜昌市西陵一路22号地块商住项目",
-      "realValue": 3.0,
+      "realValue": 4.0,
       "engName": "宜昌市西陵一路22号地块商住项目",
-      "tbValue": 3.0,
+      "tbValue": 4.0,
       "endDate": "2026-05-16",
       "bzXwlb": "施工_项目获奖_省级",
-      "documentNumber": "鄂建质安协〔2025〕31号"
+      "documentNumber": "鄂建质安协〔2025〕32号"
     },
     {
       "valid": 12,
@@ -118,6 +118,18 @@
       "jfqyzz": "建筑业企业资质_施工总承包_建筑工程_壹级",
       "reason": "市优质工程奖",
       "beginDate": "2025-06-24",
+      "realValue": 4.0,
+      "engName": "魔芋食品深加工技改项目（11#车间）",
+      "tbValue": 4.0,
+      "endDate": "2026-06-24",
+      "bzXwlb": "施工_项目获奖/现场评价_市级",
+      "documentNumber": "宜市建协〔2025〕5号"
+    },
+    {
+      "valid": 12,
+      "jfqyzz": "建筑业企业资质_施工总承包_建筑工程_壹级",
+      "reason": "市优质工程奖",
+      "beginDate": "2025-06-24",
       "realValue": 0.0,
       "engName": "高端药用包装材料智能化生产项目（办公楼、厂房A、厂房B、原料仓库）",
       "tbValue": 4.0,
@@ -125,18 +137,6 @@
       "bzXwlb": "施工_项目获奖/现场评价_市级",
       "documentNumber": "宜市建协〔2025〕5号",
       "fssm": "有同类重复加分记录，按加分标准上限记分。"
-    },
-    {
-      "valid": 12,
-      "jfqyzz": "建筑业企业资质_施工总承包_建筑工程_壹级",
-      "reason": "市优质工程奖",
-      "beginDate": "2025-06-24",
-      "realValue": 4.0,
-      "engName": "魔芋食品深加工技改项目（11#车间）",
-      "tbValue": 4.0,
-      "endDate": "2026-06-24",
-      "bzXwlb": "施工_项目获奖/现场评价_市级",
-      "documentNumber": "宜市建协〔2025〕5号"
     },
     {
       "valid": 6,
@@ -211,7 +211,7 @@
     }
   ],
   "cioName": "湖北盛荣建设集团有限公司",
-  "jfsj": "2025-11-01",
+  "jfsj": "2025-11-03",
   "eqtName": "施工",
   "blxwArray": [
     {
@@ -356,5 +356,5 @@
     }
   ],
   "cecId": "4028e4ef4d5b0ad4014d5b1aa1f001ae",
-  "cechId": "8a9b954d9a29b507019a3b375e8a3ef5"
+  "cechId": "8a9b954d9a29b507019a46603270690c"
 }
